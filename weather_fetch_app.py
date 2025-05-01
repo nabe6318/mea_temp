@@ -62,26 +62,41 @@ if st.button("データを取得して表示"):
             itsu = [str(start_date), str(end_date)]
             doko = [lat, lat, lon, lon]
             records = {}
+            normals = {}
+            tim_ref = None
 
             for label in selected_labels:
                 code = ELEMENT_OPTIONS[label]
-                data, tim, _, _ = amd.GetMetData(code, itsu, doko)
-                records[label] = data[:, 0, 0]
 
-            df = pd.DataFrame(records)
-            df.insert(0, "日付", [str(t) for t in tim])
+                # 実測値取得
+                data, tim, _, _ = amd.GetMetData(code, itsu, doko, cli=False)
+                records[label + "（実測）"] = data[:, 0, 0]
 
-            st.subheader("3. データ表示")
+                # 平年値取得（cli=True）
+                norm_data, norm_tim, _, _ = amd.GetMetData(code, itsu, doko, cli=True)
+                normals[label + "（平年）"] = norm_data[:, 0, 0]
+
+                if tim_ref is None:
+                    tim_ref = tim  # 最初のタイムスタンプを基準とする
+
+            df = pd.DataFrame({**records, **normals})
+            df.insert(0, "日付", [str(t) for t in tim_ref])
+
+            st.subheader("3. データ表示（実測と平年）")
             st.dataframe(df)
 
-            st.subheader("4. 折れ線グラフ（要素ごと）")
+            st.subheader("4. 折れ線グラフ（実測 vs 平年）")
             for label in selected_labels:
-                st.write(f"### {label} の推移")
+                actual = label + "（実測）"
+                normal = label + "（平年）"
+                st.write(f"### {label} の推移（実測と平年）")
                 fig, ax = plt.subplots()
-                ax.plot(df["日付"], df[label], marker='o')
+                ax.plot(df["日付"], df[actual], marker='o', label='実測')
+                ax.plot(df["日付"], df[normal], marker='x', linestyle='--', label='平年')
                 ax.set_xlabel("日付")
                 ax.set_ylabel(label)
                 ax.tick_params(axis='x', labelrotation=45)
+                ax.legend()
                 st.pyplot(fig)
 
         except Exception as e:
