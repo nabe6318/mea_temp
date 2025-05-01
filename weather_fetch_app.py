@@ -26,22 +26,26 @@ ELEMENT_OPTIONS = {
 }
 
 # --- タイトル ---
-st.title("気象データ取得＋可視化アプリ")
+st.title("気象データ取得＋可視化アプリ＋信大雑草研作成")
 st.write("地図で地点を選び、気象要素を可視化します。")
 
 # --- 地図で座標選択 ---
 st.subheader("1. 地図で圃場地点をクリックして選択")
-m = folium.Map(location=[35.0, 135.0], zoom_start=6)
-m.add_child(folium.LatLngPopup())
-st_map = st_folium(m, height=400, width=700)
+
+# foliumマップの作成
+m = folium.Map(location=[35.0, 135.0], zoom_start=6, control_scale=True)
+m.add_child(folium.LatLngPopup())  # クリック座標表示
+
+# マップを表示し、クリック情報を取得
+st_data = st_folium(m, height=500, width=700)
 
 lat = lon = None
-if st_map and st_map.get("last_clicked"):
-    lat = st_map["last_clicked"]["lat"]
-    lon = st_map["last_clicked"]["lng"]
+if st_data and st_data.get("last_clicked"):
+    lat = st_data["last_clicked"]["lat"]
+    lon = st_data["last_clicked"]["lng"]
     st.success(f"選択された座標：緯度 {lat:.4f}, 経度 {lon:.4f}")
 else:
-    st.warning("地図をクリックして地点を選択してください。")
+    st.info("地図をクリックして緯度・経度を選んでください。")
 
 # --- 入力フォーム ---
 st.subheader("2. 取得期間と気象要素の指定")
