@@ -27,7 +27,7 @@ ELEMENT_OPTIONS = {
 
 # --- タイトル ---
 st.title("気象データ取得＋可視化アプリ")
-st.write("地図で地点を選び、気象要素を可視化します。created by O. Watanabe")
+st.write("地図で地点を選び、気象要素を可視化します。created by O. Watanabe.地図の下が表示されないときは再読込")
 
 # --- 地図で座標選択 ---
 st.subheader("1. 地図で地点をクリック")
