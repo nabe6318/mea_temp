@@ -74,11 +74,11 @@ if st.button("データを取得して表示。CSVでダウンロードできま
 
                 # 実測値取得
                 data, tim, _, _ = amd.GetMetData(code, itsu, doko, cli=False)
-                records[label + "（実測）"] = data[:, 0, 0]
+                records[label + "（メッシュデータ）"] = data[:, 0, 0]
 
                 # 平年値取得（cli=True）
                 norm_data, norm_tim, _, _ = amd.GetMetData(code, itsu, doko, cli=True)
-                normals[label + "（平年）"] = norm_data[:, 0, 0]
+                normals[label + "（平年値）"] = norm_data[:, 0, 0]
 
                 if tim_ref is None:
                     tim_ref = tim  # 最初のタイムスタンプを基準とする
@@ -86,17 +86,17 @@ if st.button("データを取得して表示。CSVでダウンロードできま
             df = pd.DataFrame({**records, **normals})
             df.insert(0, "日付", [str(t) for t in tim_ref])
 
-            st.subheader("3. データ表示（実測と平年）")
+            st.subheader("3. データ表示（メッシュデータと平年値）")
             st.dataframe(df)
 
-            st.subheader("4. 折れ線グラフ（実測 vs 平年）")
+            st.subheader("4. 折れ線グラフ（メッシュデータ vs 平年値）")
             for label in selected_labels:
-                actual = label + "（実測）"
-                normal = label + "（平年）"
-                st.write(f"### {label} の推移（実測と平年）")
+                actual = label + "（メッシュデータ）"
+                normal = label + "（平年値）"
+                st.write(f"### {label} の推移（メッシュデータと平年値）")
                 fig, ax = plt.subplots()
-                ax.plot(df["日付"], df[actual], marker='o', label='実測')
-                ax.plot(df["日付"], df[normal], marker='x', linestyle='--', label='平年')
+                ax.plot(df["日付"], df[actual], marker='o', label='メッシュデータ')
+                ax.plot(df["日付"], df[normal], marker='x', linestyle='--', label='平年値')
                 ax.set_xlabel("日付")
                 ax.set_ylabel(label)
                 ax.tick_params(axis='x', labelrotation=45)
