@@ -26,11 +26,11 @@ ELEMENT_OPTIONS = {
 }
 
 # --- タイトル ---
-st.title("気象データ取得＋可視化アプリ＋信大雑草研作成")
-st.write("地図で地点を選び、気象要素を可視化します。")
+st.title("気象データ取得＋可視化アプリ")
+st.write("地図で地点を選び、気象要素を可視化します。created by O. Watanabe")
 
 # --- 地図で座標選択 ---
-st.subheader("1. 地図で圃場地点をクリックして選択")
+st.subheader("1. 地図で地点をクリック")
 
 # foliumマップの作成
 m = folium.Map(location=[35.0, 135.0], zoom_start=6, control_scale=True)
@@ -54,7 +54,7 @@ end_date = st.date_input("終了日")
 selected_labels = st.multiselect("取得する気象要素（記号付き）", list(ELEMENT_OPTIONS.keys()), default=["日平均気温 (TMP_mea)"])
 
 # --- 実行処理 ---
-if st.button("データを取得して表示"):
+if st.button("データを取得して表示。CSVでダウンロードできます。"):
     if not lat or not lon:
         st.error("地図から地点を選択してください。")
     elif start_date >= end_date:
