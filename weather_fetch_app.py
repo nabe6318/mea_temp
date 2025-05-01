@@ -27,7 +27,7 @@ ELEMENT_OPTIONS = {
 
 # --- タイトル ---
 st.title("気象データ取得＋可視化アプリ")
-st.write("地図で地点を選び、気象要素を可視化します。created by O. Watanabe.地図の下が表示されないときは再読込")
+st.write("地図で地点を選び、気象要素を可視化します.地図の下が表示されないときは再読込")
 
 # --- 地図で座標選択 ---
 st.subheader("1. 地図で地点をクリック")
@@ -51,7 +51,7 @@ else:
 st.subheader("2. 取得期間と気象要素の指定(26日先まで指定可能)")
 start_date = st.date_input("開始日")
 end_date = st.date_input("終了日")
-selected_labels = st.multiselect("取得する気象要素（記号付き）", list(ELEMENT_OPTIONS.keys()), default=["日平均気温 (TMP_mea)"])
+selected_labels = st.multiselect("取得する気象要素（記号付き）", list(ELEMENT_OPTIONS.keys()), default=["日平均気温 (TMP_mea)","日最高気温 (TMP_max)","日最低気温 (TMP_min)"])
 
 # --- 実行処理 ---
 if st.button("データを取得"):
