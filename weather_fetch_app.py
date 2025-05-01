@@ -54,7 +54,7 @@ end_date = st.date_input("終了日")
 selected_labels = st.multiselect("取得する気象要素（記号付き）", list(ELEMENT_OPTIONS.keys()), default=["日平均気温 (TMP_mea)"])
 
 # --- 実行処理 ---
-if st.button("データを取得して表示。CSVでダウンロードできます。"):
+if st.button("データを取得"):
     if not lat or not lon:
         st.error("地図から地点を選択してください。")
     elif start_date >= end_date:
@@ -74,7 +74,7 @@ if st.button("データを取得して表示。CSVでダウンロードできま
 
                 # 実測値取得
                 data, tim, _, _ = amd.GetMetData(code, itsu, doko, cli=False)
-                records[label + "（メッシュデータ）"] = data[:, 0, 0]
+                records[label + "（AMD）"] = data[:, 0, 0]
 
                 # 平年値取得（cli=True）
                 norm_data, norm_tim, _, _ = amd.GetMetData(code, itsu, doko, cli=True)
@@ -86,16 +86,16 @@ if st.button("データを取得して表示。CSVでダウンロードできま
             df = pd.DataFrame({**records, **normals})
             df.insert(0, "日付", [str(t) for t in tim_ref])
 
-            st.subheader("3. データ表示（メッシュデータと平年値）")
+            st.subheader("3. データ表示（AMDと平年値）")
             st.dataframe(df)
 
-            st.subheader("4. 折れ線グラフ（メッシュデータ vs 平年値）")
+            st.subheader("4. 折れ線グラフ（AMD vs 平年値）")
             for label in selected_labels:
-                actual = label + "（メッシュデータ）"
+                actual = label + "（AMD）"
                 normal = label + "（平年値）"
-                st.write(f"### {label} の推移（メッシュデータと平年値）")
+                st.write(f"### {label} の推移（AMDと平年値）")
                 fig, ax = plt.subplots()
-                ax.plot(df["日付"], df[actual], marker='o', label='メッシュデータ')
+                ax.plot(df["日付"], df[actual], marker='o', label='AMD')
                 ax.plot(df["日付"], df[normal], marker='x', linestyle='--', label='平年値')
                 ax.set_xlabel("日付")
                 ax.set_ylabel(label)
