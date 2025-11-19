@@ -13,7 +13,10 @@ ELEMENT_OPTIONS = [
 ]
 
 # --- タイトル ---
-st.title("気象データ取得＋可視化アプリ")
+st.markdown(
+    "<h3 style='font-size:22px; color:#333;'>メッシュ農業気象データ　streamlit版　信大作成</h3>",
+    unsafe_allow_html=True
+)
 st.write("地図で地点を選び、気象要素を可視化します.地図の下が表示されないときは再読込")
 
 # --- 地図で座標選択 ---
@@ -131,4 +134,5 @@ if st.button("データを取得"):
                 st.pyplot(fig)
 
         except Exception as e:
+
             st.error(f"エラーが発生しました: {e}")
