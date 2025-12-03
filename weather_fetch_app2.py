@@ -17,7 +17,7 @@ st.markdown(
     "<h3 style='font-size:22px; color:#333;'>メッシュ農業気象データ　streamlit版　信大作成</h3>",
     unsafe_allow_html=True
 )
-st.write("地図で地点を選び、気象要素を可視化します.地図の下が表示されないときは再読込")
+st.write("地図で地点を選び、気象要素を可視化します．地図の下が表示されないときは再読込")
 
 # --- 地図で座標選択 ---
 st.subheader("1. 地図で地点をクリック")
@@ -29,14 +29,32 @@ m.add_child(folium.LatLngPopup())  # クリック座標表示
 # マップを表示し、クリック情報を取得
 st_data = st_folium(m, height=500, width=700)
 
-lat = lon = None
+# --- 緯度・経度の取得ロジック ---
+# 1. デフォルト値
+default_lat = 35.0
+default_lon = 135.0
+
+# 2. マップでクリックされたら、その値をデフォルトに上書き
 if st_data and st_data.get("last_clicked"):
-    lat = st_data["last_clicked"]["lat"]
-    lon = st_data["last_clicked"]["lng"]
-    st.success(f"選択された座標：緯度 {lat:.4f}, 経度 {lon:.4f}")
+    default_lat = st_data["last_clicked"]["lat"]
+    default_lon = st_data["last_clicked"]["lng"]
+    st.success(f"地図で選択された座標：緯度 {default_lat:.4f}, 経度 {default_lon:.4f}")
 else:
-    st.info("地図をクリックして緯度・経度を選んでください。")
-    
+    st.info("地図をクリックするか、下の入力欄に緯度・経度を入力してください。")
+
+# 3. 手入力用の number_input（マップクリックで自動的に値が入る）
+lat = st.number_input(
+    "緯度（北緯は＋、南緯は－）",
+    value=float(default_lat),
+    format="%.4f"
+)
+lon = st.number_input(
+    "経度（東経は＋、西経は－）",
+    value=float(default_lon),
+    format="%.4f"
+)
+st.caption("👉 地図をクリックすると上の緯度・経度に自動で反映されます。数値を直接入力しても構いません。")
+
 with st.expander("ℹ️ 気象要素の説明（クリックで展開）"):
     st.markdown("""
     <style>
@@ -82,13 +100,16 @@ with st.expander("ℹ️ 気象要素の説明（クリックで展開）"):
 st.subheader("2. 取得期間と気象要素の指定(26日先まで指定可能)")
 start_date = st.date_input("開始日")
 end_date = st.date_input("終了日")
-selected_codes = st.multiselect("取得する気象要素（記号）", ELEMENT_OPTIONS, default=["TMP_mea", "TMP_max", "TMP_min"])
+selected_codes = st.multiselect(
+    "取得する気象要素（記号）",
+    ELEMENT_OPTIONS,
+    default=["TMP_mea", "TMP_max", "TMP_min"]
+)
 
-# -# --- 実行処理 ---
+# --- 実行処理 ---
 if st.button("データを取得"):
-    if not lat or not lon:
-        st.error("地図から地点を選択してください。")
-    elif start_date >= end_date:
+    # 緯度経度は number_input の値をそのまま利用
+    if start_date >= end_date:
         st.error("終了日は開始日より後の日付にしてください。")
     elif not selected_codes:
         st.error("1つ以上の気象要素を選択してください。")
@@ -134,5 +155,4 @@ if st.button("データを取得"):
                 st.pyplot(fig)
 
         except Exception as e:
-
             st.error(f"エラーが発生しました: {e}")
